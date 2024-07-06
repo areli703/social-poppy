@@ -199,19 +199,19 @@ const PreferencesData = [
 
 const OrganizationsData = [
   {
-    name: 'Max Delbruck',
+    name: 'William Harvey',
   },
 
   {
-    name: 'Frederick Gowland Hopkins',
+    name: 'Paul Ehrlich',
   },
 
   {
-    name: 'Anton van Leeuwenhoek',
+    name: 'Alfred Binet',
   },
 
   {
-    name: 'J. Robert Oppenheimer',
+    name: 'Noam Chomsky',
   },
 ];
 
