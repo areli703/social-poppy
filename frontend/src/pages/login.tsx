@@ -1,53 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import type { ReactElement } from 'react';
 import Head from 'next/head';
-import { Field, Form, Formik, FormikHelpers } from 'formik';
+import BaseButton from '../components/BaseButton';
+import CardBox from '../components/CardBox';
+import BaseIcon from '../components/BaseIcon';
+import { mdiInformation } from '@mdi/js';
+import SectionFullScreen from '../components/SectionFullScreen';
+import LayoutGuest from '../layouts/Guest';
+import { Field, Form, Formik } from 'formik';
+import FormField from '../components/FormField';
+import FormCheckRadio from '../components/FormCheckRadio';
+import BaseDivider from '../components/BaseDivider';
+import BaseButtons from '../components/BaseButtons';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-
 import { getPageTitle } from '../config';
 import { findMe, loginUser, resetAction } from '../stores/authSlice';
 import { useAppDispatch, useAppSelector } from '../stores/hooks';
+import Link from 'next/link';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import { getPexelsImage, getPexelsVideo } from '../helpers/pexels';
-
-import LayoutGuest from '../layouts/Guest';
-import FormField from '../components/FormField';
-import FormCheckRadio from '../components/FormCheckRadio';
-
-interface LoginValues {
-  email: string;
-  password: string;
-  remember: boolean;
-}
-
-interface IllustrationImage {
-  src?: {
-    original?: string;
-  };
-  photographer?: string;
-  photographer_url?: string;
-}
-
-interface IllustrationVideo {
-  video_files: {
-    link?: string;
-  }[];
-  user?: {
-    name?: string;
-    url?: string;
-  };
-}
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const notify = (type: string, msg: string) => toast(msg, { type: type as any });
-  const [illustrationImage, setIllustrationImage] = useState<IllustrationImage>({});
-  const [illustrationVideo, setIllustrationVideo] = useState<IllustrationVideo>({ video_files: [] });
-  const [contentType] = useState<'image' | 'video'>('image');
-  const [contentPosition] = useState<'left' | 'right' | 'background'>('left');
+  const textColor = useAppSelector((state) => state.style.linkColor);
+  const iconsColor = useAppSelector((state) => state.style.iconsColor);
+  const notify = (type, msg) => toast(msg, { type });
+  const [illustrationImage, setIllustrationImage] = useState({
+    src: undefined,
+    photographer: undefined,
+    photographer_url: undefined,
+  });
+  const [illustrationVideo, setIllustrationVideo] = useState({
+    video_files: [],
+  });
+  const [contentType, setContentType] = useState('image');
+  const [contentPosition, setContentPosition] = useState('left');
 
   const {
     currentUser,
@@ -56,7 +45,7 @@ export default function Login() {
     token,
     notify: notifyState,
   } = useAppSelector((state) => state.auth);
-  const [initialValues, setInitialValues] = useState<LoginValues>({
+  const [initialValues, setInitialValues] = useState({
     email: 'super_admin@example.com',
     password: 'password',
     remember: true,
@@ -64,6 +53,7 @@ export default function Login() {
 
   const title = 'Social Pop';
 
+  // Fetch Pexels image/video
   useEffect(() => {
     async function fetchData() {
       const image = await getPexelsImage();
@@ -73,171 +63,212 @@ export default function Login() {
     }
     fetchData();
   }, []);
-
+  // Fetch user data
   useEffect(() => {
     if (token) {
       dispatch(findMe());
     }
   }, [token, dispatch]);
-
+  // Redirect to dashboard if user is logged in
   useEffect(() => {
     if (currentUser?.id) {
       router.push('/dashboard');
     }
   }, [currentUser?.id, router]);
-
+  // Show error message if there is one
   useEffect(() => {
     if (errorMessage) {
       notify('error', errorMessage);
     }
   }, [errorMessage]);
-
+  // Show notification if there is one
   useEffect(() => {
     if (notifyState?.showNotification) {
-      notify('success', notifyState?.textNotification || '');
+      notify('success', notifyState?.textNotification);
       dispatch(resetAction());
     }
-  }, [notifyState?.showNotification, dispatch, notifyState?.textNotification]);
+  }, [notifyState?.showNotification]);
 
-  const handleSubmit = async (values: LoginValues, { setSubmitting }: FormikHelpers<LoginValues>) => {
-    const { remember, ...rest } = values;
+  const handleSubmit = async (value) => {
+    const { remember, ...rest } = value;
     await dispatch(loginUser(rest));
-    setSubmitting(false);
   };
 
-  const setLogin = (email: string) => {
-    setInitialValues((prev) => ({ ...prev, email, password: 'password' }));
+  const setLogin = (target) => {
+    const email = target?.innerText;
+    setInitialValues((prev) => {
+      return { ...prev, email, password: 'password' };
+    });
   };
+
+  const imageBlock = (image) => (
+    <div
+      className='hidden md:flex flex-col justify-end relative w-1/3'
+      style={{
+        backgroundImage: ${
+          image
+            ? url(${image.src?.original})
+            : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
+        },
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div className='bg-gradient-to-t from-gray-800 via-transparent to-transparent p-4'>
+        <a className='text-xs text-white' href={image.photographer_url} target='_blank' rel='noreferrer'>
+          Photo by {image.photographer} on Pexels
+        </a>
+      </div>
+    </div>
+  );
+
+  const videoBlock = (video) => (
+    video?.video_files?.length > 0 && (
+      <div className='hidden md:flex flex-col justify-end relative w-1/3'>
+        <video className='absolute top-0 left-0 w-full h-full object-cover' autoPlay loop muted>
+          <source src={video.video_files[0]?.link} type='video/mp4' />
+          Your browser does not support the video tag.
+        </video>
+        <div className='bg-gradient-to-t from-gray-800 via-transparent to-transparent p-4 z-10'>
+          <a className='text-xs text-white' href={video.user.url} target='_blank' rel='noreferrer'>
+            Video by {video.user.name} on Pexels
+          </a>
+        </div>
+      </div>
+    )
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div
+      style={
+        contentPosition === 'background'
+          ? {
+              backgroundImage: ${
+                illustrationImage
+                  ? url(${illustrationImage.src?.original})
+                  : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
+              },
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }
+          : {}
+      }
+    >
       <Head>
         <title>{getPageTitle('Login')}</title>
       </Head>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white">{title}</h2>
-        <p className="mt-2 text-center text-sm text-indigo-200">
-          Or{' '}
-          <Link href="/register" className="font-medium text-white hover:text-indigo-100">
-            create a new account
-          </Link>
-        </p>
-      </div>
+      <SectionFullScreen bg='violet'>
+        <div
+          className={flex ${
+            contentPosition === 'right' ? 'flex-row-reverse' : 'flex-row'
+          } min-h-screen}
+        >
+          {contentType === 'image' && contentPosition !== 'background'
+            ? imageBlock(illustrationImage)
+            : null}
+          {contentType === 'video' && contentPosition !== 'background'
+            ? videoBlock(illustrationVideo)
+            : null}
+          <div className='flex items-center justify-center flex-col space-y-8 w-full lg:w-full px-4 md:px-0'>
+            <CardBox className='w-full md:w-3/5 lg:w-2/3 p-6'>
+              <h2 className='text-5xl font-bold my-6 text-center'>{title}</h2>
+              <div className='flex flex-col text-gray-700'>
+                <p className='mb-4 text-center'>
+                  Use{' '}
+                  <code
+                    className={cursor-pointer text-blue-500}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    super_admin@example.com
+                  </code>{' '}
+                  to login as Super Admin
+                </p>
+                <p className='mb-4 text-center'>
+                  Use{' '}
+                  <code
+                    className={cursor-pointer text-blue-500}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    admin@example.com
+                  </code>{' '}
+                  to login as Admin
+                </p>
+                <p className='text-center'>
+                  Use{' '}
+                  <code
+                    className={cursor-pointer text-blue-500}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    client@example.com
+                  </code>{' '}
+                  to login as User
+                </p>
+              </div>
+            </CardBox>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Formik initialValues={initialValues} enableReinitialize onSubmit={handleSubmit}>
-            {({ isSubmitting }) => (
-              <Form className="space-y-6">
-                <FormField label="Email" help="Please enter your email">
-                  <Field
-                    name="email"
-                    type="email"
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-                </FormField>
-
-                <FormField label="Password" help="Please enter your password">
-                  <Field
-                    name="password"
-                    type="password"
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-                </FormField>
-
-                <div className="flex items-center justify-between">
-                  <FormCheckRadio type="checkbox" label="Remember me">
-                    <Field
-                      type="checkbox"
-                      name="remember"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            <CardBox className='w-full md:w-3/5 lg:w-2/3 p-6'>
+              <Formik initialValues={initialValues} enableReinitialize onSubmit={handleSubmit}>
+                <Form>
+                  <FormField label='Login' help='Please enter your login'>
+                    <Field 
+                      name='email' 
+                      type='email' 
+                      className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600'
                     />
-                  </FormCheckRadio>
+                  </FormField>
 
-                  <div className="text-sm">
-                    <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
-                      Forgot your password?
+                  <FormField label='Password' help='Please enter your password'>
+                    <Field 
+                      name='password' 
+                      type='password' 
+                      className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600'
+                    />
+                  </FormField>
+
+                  <div className='flex justify-between items-center'>
+                    <FormCheckRadio type='checkbox' label='Remember'>
+                      <Field type='checkbox' name='remember' />
+                    </FormCheckRadio>
+
+                    <Link className='text-blue-600' href='/forgot'>
+                      Forgot password?
                     </Link>
                   </div>
-                </div>
 
-                <div>
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Signing in...' : 'Sign in'}
-                  </button>
-                </div>
-              </Form>
-            )}
-          </Formik>
+                  <BaseDivider />
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <div>
-                
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Facebook</span>
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clipRule="evenodd" />
-                  </svg>
-                </a>
-              </div>
-
-              <div>
-                
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with Twitter</span>
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />
-                  </svg>
-                </a>
-              </div>
-
-              <div>
-                
-                  href="#"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                >
-                  <span className="sr-only">Sign in with GitHub</span>
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-                  </svg>
-                </a>
-              </div>
-            </div>
+                  <BaseButtons>
+                    <BaseButton
+                      className='w-full py-2'
+                      type='submit'
+                      label={isFetching ? 'Loading...' : 'Login'}
+                      color='info'
+                      disabled={isFetching}
+                    />
+                  </BaseButtons>
+                  <p className='text-center mt-4'>
+                    Don’t have an account yet?{' '}
+                    <Link className='text-blue-600' href='/register'>
+                      New Account
+                    </Link>
+                  </p>
+                </Form>
+              </Formik>
+            </CardBox>
           </div>
         </div>
-      </div>
-
-      <div className="mt-8 text-center text-sm text-indigo-200">
-        <p>
-          © 2024 {title}. All rights reserved.
-          {' | '}
-          <Link href="/privacy-policy" className="font-medium text-white hover:text-indigo-100">
-            Privacy Policy
-          </Link>
+      </SectionFullScreen>
+      <div className='bg-black text-white flex flex-col text-center justify-center md:flex-row'>
+        <p className='py-6 text-sm'>
+          © 2024 <span>{title}</span>. All rights reserved
         </p>
+        <Link className='py-6 ml-4 text-sm' href='/privacy-policy/'>
+          Privacy Policy
+        </Link>
       </div>
-
       <ToastContainer />
     </div>
   );
