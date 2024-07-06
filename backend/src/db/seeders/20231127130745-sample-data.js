@@ -244,23 +244,23 @@ const PreferencesData = [
 
 const OrganizationsData = [
   {
-    name: 'Hans Selye',
+    name: 'Edward Teller',
   },
 
   {
-    name: 'Michael Faraday',
+    name: 'Francis Galton',
   },
 
   {
-    name: 'Louis Victor de Broglie',
+    name: 'Max von Laue',
   },
 
   {
-    name: 'Carl Gauss (Karl Friedrich Gauss)',
+    name: 'Sheldon Glashow',
   },
 
   {
-    name: 'Tycho Brahe',
+    name: 'Frederick Sanger',
   },
 ];
 
