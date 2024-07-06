@@ -154,15 +154,15 @@ const PreferencesData = [
 
 const OrganizationsData = [
   {
-    name: 'Galileo Galilei',
+    name: 'J. Robert Oppenheimer',
   },
 
   {
-    name: 'Michael Faraday',
+    name: 'Ludwig Boltzmann',
   },
 
   {
-    name: 'Lucretius',
+    name: 'James Clerk Maxwell',
   },
 ];
 
