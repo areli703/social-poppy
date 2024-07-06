@@ -46,7 +46,7 @@ export default function Login() {
     notify: notifyState,
   } = useAppSelector((state) => state.auth);
   const [initialValues, setInitialValues] = useState({
-    email: 'super_admin@flatlogic.com',
+    email: 'super_admin@example.com',
     password: 'password',
     remember: true,
   });
@@ -103,7 +103,7 @@ export default function Login() {
 
   const imageBlock = (image) => (
     <div
-      className='hidden md:flex flex-col justify-end relative flex-grow-0 flex-shrink-0 w-1/3'
+      className='hidden md:flex flex-col justify-end relative w-1/3'
       style={{
         backgroundImage: `${
           image
@@ -111,50 +111,33 @@ export default function Login() {
             : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
         }`,
         backgroundSize: 'cover',
-        backgroundPosition: 'left center',
+        backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className='flex justify-center w-full bg-blue-300/20'>
-        <a
-          className='text-[8px]'
-          href={image.photographer_url}
-          target='_blank'
-          rel='noreferrer'
-        >
+      <div className='bg-gradient-to-t from-gray-800 via-transparent to-transparent p-4'>
+        <a className='text-xs text-white' href={image.photographer_url} target='_blank' rel='noreferrer'>
           Photo by {image.photographer} on Pexels
         </a>
       </div>
     </div>
   );
 
-  const videoBlock = (video) => {
-    if (video?.video_files?.length > 0) {
-      return (
-        <div className='hidden md:flex flex-col justify-end relative flex-grow-0 flex-shrink-0 w-1/3'>
-          <video
-            className='absolute top-0 left-0 w-full h-full object-cover'
-            autoPlay
-            loop
-            muted
-          >
-            <source src={video.video_files[0]?.link} type='video/mp4' />
-            Your browser does not support the video tag.
-          </video>
-          <div className='flex justify-center w-full bg-blue-300/20 z-10'>
-            <a
-              className='text-[8px]'
-              href={video.user.url}
-              target='_blank'
-              rel='noreferrer'
-            >
-              Video by {video.user.name} on Pexels
-            </a>
-          </div>
+  const videoBlock = (video) => (
+    video?.video_files?.length > 0 && (
+      <div className='hidden md:flex flex-col justify-end relative w-1/3'>
+        <video className='absolute top-0 left-0 w-full h-full object-cover' autoPlay loop muted>
+          <source src={video.video_files[0]?.link} type='video/mp4' />
+          Your browser does not support the video tag.
+        </video>
+        <div className='bg-gradient-to-t from-gray-800 via-transparent to-transparent p-4 z-10'>
+          <a className='text-xs text-white' href={video.user.url} target='_blank' rel='noreferrer'>
+            Video by {video.user.name} on Pexels
+          </a>
         </div>
-      );
-    }
-  };
+      </div>
+    )
+  );
 
   return (
     <div
@@ -167,7 +150,7 @@ export default function Login() {
                   : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
               }`,
               backgroundSize: 'cover',
-              backgroundPosition: 'left center',
+              backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
             }
           : {}
@@ -181,7 +164,7 @@ export default function Login() {
         <div
           className={`flex ${
             contentPosition === 'right' ? 'flex-row-reverse' : 'flex-row'
-          } min-h-screen w-full`}
+          } min-h-screen`}
         >
           {contentType === 'image' && contentPosition !== 'background'
             ? imageBlock(illustrationImage)
@@ -189,61 +172,45 @@ export default function Login() {
           {contentType === 'video' && contentPosition !== 'background'
             ? videoBlock(illustrationVideo)
             : null}
-          <div className='flex items-center justify-center flex-col space-y-4 w-full lg:w-full'>
-            <CardBox className='w-full md:w-3/5 lg:w-2/3'>
-              <h2 className='text-4xl font-semibold my-4'>{title}</h2>
-              <div className='flex flex-row text-gray-500 justify-between'>
-                <div>
-                  <p className='mb-2'>
-                    Use{' '}
-                    <code
-                      className={`cursor-pointer ${textColor}`}
-                      onClick={(e) => setLogin(e.target)}
-                    >
-                      super_admin@example.com
-                    </code>{' '}
-                    to login as Super Admin
-                  </p>
-
-                  <p className='mb-2'>
-                    Use{' '}
-                    <code
-                      className={`cursor-pointer ${textColor}`}
-                      onClick={(e) => setLogin(e.target)}
-                    >
-                      admin@example.com
-                    </code>{' '}
-                    to login as Admin
-                  </p>
-                  <p>
-                    Use{' '}
-                    <code
-                      className={`cursor-pointer ${textColor}`}
-                      onClick={(e) => setLogin(e.target)}
-                    >
-                      client@example.com
-                    </code>{' '}
-                    to login as User
-                  </p>
-                </div>
-                <div>
-                  <BaseIcon
-                    className={`${iconsColor}`}
-                    w='w-16'
-                    h='h-16'
-                    size={48}
-                    path={mdiInformation}
-                  />
-                </div>
+          <div className='flex items-center justify-center flex-col space-y-8 w-full lg:w-full px-4 md:px-0'>
+            <CardBox className='w-full md:w-3/5 lg:w-2/3 p-6'>
+              <h2 className='text-5xl font-bold my-6 text-center'>{title}</h2>
+              <div className='flex flex-col text-gray-700'>
+                <p className='mb-4 text-center'>
+                  Use{' '}
+                  <code
+                    className={`cursor-pointer text-blue-500`}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    super_admin@example.com
+                  </code>{' '}
+                  to login as Super Admin
+                </p>
+                <p className='mb-4 text-center'>
+                  Use{' '}
+                  <code
+                    className={`cursor-pointer text-blue-500`}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    admin@example.com
+                  </code>{' '}
+                  to login as Admin
+                </p>
+                <p className='text-center'>
+                  Use{' '}
+                  <code
+                    className={`cursor-pointer text-blue-500`}
+                    onClick={(e) => setLogin(e.target)}
+                  >
+                    client@example.com
+                  </code>{' '}
+                  to login as User
+                </p>
               </div>
             </CardBox>
 
-            <CardBox className='w-full md:w-3/5 lg:w-2/3'>
-              <Formik
-                initialValues={initialValues}
-                enableReinitialize
-                onSubmit={(values) => handleSubmit(values)}
-              >
+            <CardBox className='w-full md:w-3/5 lg:w-2/3 p-6'>
+              <Formik initialValues={initialValues} enableReinitialize onSubmit={handleSubmit}>
                 <Form>
                   <FormField label='Login' help='Please enter your login'>
                     <Field 
@@ -266,10 +233,7 @@ export default function Login() {
                       <Field type='checkbox' name='remember' />
                     </FormCheckRadio>
 
-                    <Link
-                      className='text-blue-600'
-                      href='/forgot'
-                    >
+                    <Link className='text-blue-600' href='/forgot'>
                       Forgot password?
                     </Link>
                   </div>
@@ -278,15 +242,14 @@ export default function Login() {
 
                   <BaseButtons>
                     <BaseButton
-                      className='w-full'
+                      className='w-full py-2'
                       type='submit'
                       label={isFetching ? 'Loading...' : 'Login'}
                       color='info'
                       disabled={isFetching}
                     />
                   </BaseButtons>
-                  <br />
-                  <p className='text-center'>
+                  <p className='text-center mt-4'>
                     Don’t have an account yet?{' '}
                     <Link className='text-blue-600' href='/register'>
                       New Account
