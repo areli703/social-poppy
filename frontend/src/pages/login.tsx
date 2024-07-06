@@ -3,15 +3,12 @@ import type { ReactElement } from 'react';
 import Head from 'next/head';
 import BaseButton from '../components/BaseButton';
 import CardBox from '../components/CardBox';
-import BaseIcon from '../components/BaseIcon';
-import { mdiInformation } from '@mdi/js';
 import SectionFullScreen from '../components/SectionFullScreen';
 import LayoutGuest from '../layouts/Guest';
 import { Field, Form, Formik } from 'formik';
 import FormField from '../components/FormField';
 import FormCheckRadio from '../components/FormCheckRadio';
 import BaseDivider from '../components/BaseDivider';
-import BaseButtons from '../components/BaseButtons';
 import { useRouter } from 'next/router';
 import { getPageTitle } from '../config';
 import { findMe, loginUser, resetAction } from '../stores/authSlice';
@@ -23,8 +20,6 @@ import 'react-toastify/dist/ReactToastify.min.css';
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const textColor = useAppSelector((state) => state.style.linkColor);
-  const iconsColor = useAppSelector((state) => state.style.iconsColor);
   const notify = (type, msg) => toast(msg, { type });
 
   const {
@@ -77,69 +72,90 @@ export default function Login() {
     }
   };
 
-  const setLogin = (target) => {
-    const email = target?.innerText;
-    setInitialValues((prev) => {
-      return { ...prev, email, password: 'password' };
-    });
+  const setLogin = (email) => {
+    setInitialValues((prev) => ({ ...prev, email, password: 'password' }));
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <Head>
         <title>{getPageTitle('Login')}</title>
       </Head>
 
-      <SectionFullScreen bg='violet'>
-        <CardBox className='w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-md'>
-          <CardBox className='mb-4'>
-            <h2 className='text-2xl font-bold mb-4'>{title}</h2>
-            <div className='flex flex-col text-gray-700'>
-              <p className='mb-2'>
-                Use{' '}
-                <code
-                  className={`cursor-pointer ${textColor} bg-gray-100 px-1 rounded`}
-                  onClick={(e) => setLogin(e.target)}
-                >
-                  admin@flatlogic.com
-                </code>{' '}
-                to login as Admin
-              </p>
-            </div>
-          </CardBox>
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            {title}
+          </h2>
+          <p className="mt-2 text-center text-sm text-indigo-200">
+            Sign in to your account
+          </p>
+        </div>
+        <CardBox className="bg-white shadow-xl rounded-lg p-8">
+          <div className="mb-4 text-sm text-gray-600">
+            <p>
+              Use{' '}
+              <code 
+                className="cursor-pointer text-indigo-600 bg-indigo-100 px-1 py-0.5 rounded"
+                onClick={() => setLogin('admin@flatlogic.com')}
+              >
+                admin@flatlogic.com
+              </code>{' '}
+              to login as Admin
+            </p>
+          </div>
 
           <Formik
             initialValues={initialValues}
             enableReinitialize
             onSubmit={handleSubmit}
           >
-            <Form>
-              <FormField label='Login' help='Please enter your login'>
-                <Field name='email' />
+            <Form className="mt-8 space-y-6">
+              <FormField label="Email" help="Please enter your email">
+                <Field 
+                  name="email" 
+                  type="email"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                />
               </FormField>
 
-              <FormField label='Password' help='Please enter your password'>
-                <Field name='password' type='password' />
+              <FormField label="Password" help="Please enter your password">
+                <Field 
+                  name="password" 
+                  type="password"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                />
               </FormField>
 
-              <FormCheckRadio type='checkbox' label='Remember'>
-                <Field type='checkbox' name='remember' />
-              </FormCheckRadio>
+              <div className="flex items-center justify-between">
+                <FormCheckRadio type="checkbox" label="Remember me">
+                  <Field 
+                    type="checkbox" 
+                    name="remember"
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                </FormCheckRadio>
 
-              <BaseDivider />
+                <div className="text-sm">
+                  <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                    Forgot your password?
+                  </Link>
+                </div>
+              </div>
 
-              <BaseButtons>
+              <div>
                 <BaseButton
-                  type='submit'
-                  label={isFetching ? 'Loading...' : 'Login'}
-                  color='info'
+                  type="submit"
+                  label={isFetching ? 'Signing in...' : 'Sign in'}
+                  color="info"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   disabled={isFetching}
                 />
-              </BaseButtons>
+              </div>
             </Form>
           </Formik>
         </CardBox>
-      </SectionFullScreen>
+      </div>
       <ToastContainer />
     </div>
   );
