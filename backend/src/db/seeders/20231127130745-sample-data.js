@@ -154,7 +154,7 @@ const PreferencesData = [
 
 const OrganizationsData = [
   {
-    name: 'James Clerk Maxwell',
+    name: 'Euclid',
   },
 
   {
@@ -162,7 +162,7 @@ const OrganizationsData = [
   },
 
   {
-    name: 'Hans Bethe',
+    name: 'Rudolf Virchow',
   },
 ];
 
