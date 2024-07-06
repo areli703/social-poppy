@@ -95,15 +95,15 @@ export default function Login() {
 
   const imageBlock = (image) => (
     <div
-      className='hidden md:flex flex-col justify-end relative w-1/2'
+      className="hidden md:flex flex-col justify-center items-center bg-gray-100 p-8 w-1/2"
       style={{
         backgroundImage: `url(${image?.src?.original || 'https://via.placeholder.com/600'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
     >
-      <div className='bg-gradient-to-t from-gray-800 via-transparent to-transparent p-4'>
-        <a className='text-xs text-white' href={image.photographer_url} target='_blank' rel='noreferrer'>
+      <div className="bg-white bg-opacity-70 p-4 rounded-md">
+        <a className="text-xs text-gray-700" href={image.photographer_url} target="_blank" rel="noreferrer">
           Photo by {image.photographer} on Pexels
         </a>
       </div>
