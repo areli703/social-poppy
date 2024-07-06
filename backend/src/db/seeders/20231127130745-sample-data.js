@@ -51,6 +51,16 @@ const CompaniesData = [
 
     // type code here for "relation_one" field
   },
+
+  {
+    name: 'Social Media Experts',
+
+    address: '202 Social Lane, Austin, TX',
+
+    email: 'team@socialmediaexperts.com',
+
+    // type code here for "relation_one" field
+  },
 ];
 
 const PaymentsData = [
@@ -88,6 +98,16 @@ const PaymentsData = [
     amount: 39.99,
 
     paid_at: new Date('2023-10-04T13:00:00Z'),
+
+    // type code here for "relation_one" field
+
+    // type code here for "relation_one" field
+  },
+
+  {
+    amount: 59.99,
+
+    paid_at: new Date('2023-10-05T14:00:00Z'),
 
     // type code here for "relation_one" field
 
@@ -132,6 +152,17 @@ const PostsData = [
       "Our team is growing! We're hiring for multiple positions. #hiring #careers",
 
     generated_at: new Date('2023-10-04T13:00:00Z'),
+
+    // type code here for "relation_one" field
+
+    // type code here for "relation_one" field
+  },
+
+  {
+    content:
+      'Thank you to all our customers for your support! #gratitude #customers',
+
+    generated_at: new Date('2023-10-05T14:00:00Z'),
 
     // type code here for "relation_one" field
 
@@ -195,23 +226,41 @@ const PreferencesData = [
 
     // type code here for "relation_one" field
   },
+
+  {
+    goal: 'Promote products',
+
+    tone: 'Professional',
+
+    style: 'Formal',
+
+    topics: 'E-commerce, Retail, Shopping',
+
+    // type code here for "relation_one" field
+
+    // type code here for "relation_one" field
+  },
 ];
 
 const OrganizationsData = [
   {
-    name: 'Justus Liebig',
+    name: 'Max Delbruck',
   },
 
   {
-    name: 'Leonard Euler',
+    name: 'Robert Koch',
   },
 
   {
-    name: 'Isaac Newton',
+    name: 'Jean Baptiste Lamarck',
   },
 
   {
-    name: 'Marcello Malpighi',
+    name: 'Neils Bohr',
+  },
+
+  {
+    name: 'Thomas Hunt Morgan',
   },
 ];
 
@@ -261,6 +310,17 @@ async function associateUserWithOrganization() {
   if (User3?.setOrganization) {
     await User3.setOrganization(relatedOrganization3);
   }
+
+  const relatedOrganization4 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const User4 = await Users.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (User4?.setOrganization) {
+    await User4.setOrganization(relatedOrganization4);
+  }
 }
 
 async function associateCompanyWithOrganization() {
@@ -306,6 +366,17 @@ async function associateCompanyWithOrganization() {
   });
   if (Company3?.setOrganization) {
     await Company3.setOrganization(relatedOrganization3);
+  }
+
+  const relatedOrganization4 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Company4 = await Companies.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Company4?.setOrganization) {
+    await Company4.setOrganization(relatedOrganization4);
   }
 }
 
@@ -353,6 +424,17 @@ async function associatePaymentWithUser() {
   if (Payment3?.setUser) {
     await Payment3.setUser(relatedUser3);
   }
+
+  const relatedUser4 = await Users.findOne({
+    offset: Math.floor(Math.random() * (await Users.count())),
+  });
+  const Payment4 = await Payments.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Payment4?.setUser) {
+    await Payment4.setUser(relatedUser4);
+  }
 }
 
 async function associatePaymentWithOrganization() {
@@ -398,6 +480,17 @@ async function associatePaymentWithOrganization() {
   });
   if (Payment3?.setOrganization) {
     await Payment3.setOrganization(relatedOrganization3);
+  }
+
+  const relatedOrganization4 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Payment4 = await Payments.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Payment4?.setOrganization) {
+    await Payment4.setOrganization(relatedOrganization4);
   }
 }
 
@@ -445,6 +538,17 @@ async function associatePostWithUser() {
   if (Post3?.setUser) {
     await Post3.setUser(relatedUser3);
   }
+
+  const relatedUser4 = await Users.findOne({
+    offset: Math.floor(Math.random() * (await Users.count())),
+  });
+  const Post4 = await Posts.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Post4?.setUser) {
+    await Post4.setUser(relatedUser4);
+  }
 }
 
 async function associatePostWithOrganization() {
@@ -490,6 +594,17 @@ async function associatePostWithOrganization() {
   });
   if (Post3?.setOrganization) {
     await Post3.setOrganization(relatedOrganization3);
+  }
+
+  const relatedOrganization4 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Post4 = await Posts.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Post4?.setOrganization) {
+    await Post4.setOrganization(relatedOrganization4);
   }
 }
 
@@ -537,6 +652,17 @@ async function associatePreferenceWithUser() {
   if (Preference3?.setUser) {
     await Preference3.setUser(relatedUser3);
   }
+
+  const relatedUser4 = await Users.findOne({
+    offset: Math.floor(Math.random() * (await Users.count())),
+  });
+  const Preference4 = await Preferences.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Preference4?.setUser) {
+    await Preference4.setUser(relatedUser4);
+  }
 }
 
 async function associatePreferenceWithOrganization() {
@@ -582,6 +708,17 @@ async function associatePreferenceWithOrganization() {
   });
   if (Preference3?.setOrganization) {
     await Preference3.setOrganization(relatedOrganization3);
+  }
+
+  const relatedOrganization4 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Preference4 = await Preferences.findOne({
+    order: [['id', 'ASC']],
+    offset: 4,
+  });
+  if (Preference4?.setOrganization) {
+    await Preference4.setOrganization(relatedOrganization4);
   }
 }
 
