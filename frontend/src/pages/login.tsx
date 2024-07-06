@@ -48,28 +48,25 @@ export default function Login() {
       dispatch(findMe());
     }
   }, [token, dispatch]);
-
   // Redirect to dashboard if user is logged in
   useEffect(() => {
     if (currentUser?.id) {
       router.push('/dashboard');
     }
   }, [currentUser?.id, router]);
-
   // Show error message if there is one
   useEffect(() => {
     if (errorMessage) {
       notify('error', errorMessage);
     }
   }, [errorMessage]);
-
   // Show notification if there is one
   useEffect(() => {
     if (notifyState?.showNotification) {
       notify('success', notifyState?.textNotification);
       dispatch(resetAction());
     }
-  }, [notifyState?.showNotification, dispatch]);
+  }, [notifyState?.showNotification]);
 
   const handleSubmit = async (value) => {
     const { remember, ...rest } = value;
@@ -84,22 +81,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div>
       <Head>
         <title>{getPageTitle('Login')}</title>
       </Head>
 
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">{title}</h2>
-          <p className="mt-2 text-center text-sm text-indigo-200">
-            Sign in to your account
-          </p>
-        </div>
-
-        <CardBox className="bg-white shadow-xl rounded-lg p-8">
-          <div className="flex flex-row text-gray-500 justify-between mb-6">
-            <div>
+      <SectionFullScreen bg="violet">
+        <CardBox className="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl">
+          <CardBox className="mb-4">
+            <h2 className="text-2xl font-bold mb-4">{title}</h2>
+            <div className="flex flex-col text-gray-700">
               <p className="mb-2">
                 Use{' '}
                 <code
@@ -110,7 +101,6 @@ export default function Login() {
                 </code>{' '}
                 to login as Super Admin
               </p>
-
               <p className="mb-2">
                 Use{' '}
                 <code
@@ -132,76 +122,46 @@ export default function Login() {
                 to login as User
               </p>
             </div>
-            <div>
-              <BaseIcon
-                className={`${iconsColor}`}
-                w="w-16"
-                h="h-16"
-                size={48}
-                path={mdiInformation}
-              />
-            </div>
-          </div>
+          </CardBox>
 
           <Formik
             initialValues={initialValues}
             enableReinitialize
             onSubmit={(values) => handleSubmit(values)}
           >
-            <Form className="mt-8 space-y-6">
-              <FormField label="Email" help="Please enter your email">
-                <Field 
-                  name="email" 
-                  type="email" 
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                />
+            <Form>
+              <FormField label="Login" help="Please enter your login">
+                <Field name="email" />
               </FormField>
 
               <FormField label="Password" help="Please enter your password">
-                <Field 
-                  name="password" 
-                  type="password" 
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                />
+                <Field name="password" type="password" />
               </FormField>
 
-              <div className="flex items-center justify-between">
-                <FormCheckRadio type="checkbox" label="Remember me">
-                  <Field
-                    type="checkbox"
-                    name="remember"
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
-                </FormCheckRadio>
+              <FormCheckRadio type="checkbox" label="Remember">
+                <Field type="checkbox" name="remember" />
+              </FormCheckRadio>
 
-                <div className="text-sm">
-                  <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Forgot your password?
-                  </Link>
-                </div>
-              </div>
+              <BaseDivider />
 
-              <div>
+              <BaseButtons>
                 <BaseButton
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   type="submit"
-                  label={isFetching ? 'Logging in...' : 'Login'}
+                  label={isFetching ? 'Loading...' : 'Login'}
                   color="info"
                   disabled={isFetching}
                 />
-              </div>
+                <BaseButton
+                  type="reset"
+                  label="Reset"
+                  color="info"
+                  outline
+                />
+              </BaseButtons>
             </Form>
           </Formik>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link className="font-medium text-indigo-600 hover:text-indigo-500" href="/register">
-              Sign up
-            </Link>
-          </p>
         </CardBox>
-      </div>
-
+      </SectionFullScreen>
       <ToastContainer />
     </div>
   );
