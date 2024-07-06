@@ -1,42 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import type { ReactElement } from 'react';
 import Head from 'next/head';
-import BaseButton from '../components/BaseButton';
-import CardBox from '../components/CardBox';
-import BaseIcon from '../components/BaseIcon';
-import { mdiInformation } from '@mdi/js';
-import SectionFullScreen from '../components/SectionFullScreen';
-import LayoutGuest from '../layouts/Guest';
-import { Field, Form, Formik } from 'formik';
-import FormField from '../components/FormField';
-import FormCheckRadio from '../components/FormCheckRadio';
-import BaseDivider from '../components/BaseDivider';
-import BaseButtons from '../components/BaseButtons';
+import { Field, Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
-import { getPageTitle } from '../config';
-import { findMe, loginUser, resetAction } from '../stores/authSlice';
-import { useAppDispatch, useAppSelector } from '../stores/hooks';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+
+import { getPageTitle } from '../config';
+import { findMe, loginUser, resetAction } from '../stores/authSlice';
+import { useAppDispatch, useAppSelector } from '../stores/hooks';
 import { getPexelsImage, getPexelsVideo } from '../helpers/pexels';
+
+import LayoutGuest from '../layouts/Guest';
+import FormField from '../components/FormField';
+import FormCheckRadio from '../components/FormCheckRadio';
+
+interface LoginValues {
+  email: string;
+  password: string;
+  remember: boolean;
+}
+
+interface IllustrationImage {
+  src?: {
+    original?: string;
+  };
+  photographer?: string;
+  photographer_url?: string;
+}
+
+interface IllustrationVideo {
+  video_files: {
+    link?: string;
+  }[];
+  user?: {
+    name?: string;
+    url?: string;
+  };
+}
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const textColor = useAppSelector((state) => state.style.linkColor);
-  const iconsColor = useAppSelector((state) => state.style.iconsColor);
-  const notify = (type, msg) => toast(msg, { type });
-  const [illustrationImage, setIllustrationImage] = useState({
-    src: undefined,
-    photographer: undefined,
-    photographer_url: undefined,
-  });
-  const [illustrationVideo, setIllustrationVideo] = useState({
-    video_files: [],
-  });
-  const [contentType, setContentType] = useState('image');
-  const [contentPosition, setContentPosition] = useState('left');
+  const notify = (type: string, msg: string) => toast(msg, { type: type as any });
+  const [illustrationImage, setIllustrationImage] = useState<IllustrationImage>({});
+  const [illustrationVideo, setIllustrationVideo] = useState<IllustrationVideo>({ video_files: [] });
+  const [contentType] = useState<'image' | 'video'>('image');
+  const [contentPosition] = useState<'left' | 'right' | 'background'>('left');
 
   const {
     currentUser,
@@ -45,7 +56,7 @@ export default function Login() {
     token,
     notify: notifyState,
   } = useAppSelector((state) => state.auth);
-  const [initialValues, setInitialValues] = useState({
+  const [initialValues, setInitialValues] = useState<LoginValues>({
     email: 'super_admin@example.com',
     password: 'password',
     remember: true,
@@ -53,7 +64,6 @@ export default function Login() {
 
   const title = 'Social Pop';
 
-  // Fetch Pexels image/video
   useEffect(() => {
     async function fetchData() {
       const image = await getPexelsImage();
@@ -64,41 +74,38 @@ export default function Login() {
     fetchData();
   }, []);
 
-  // Fetch user data
   useEffect(() => {
     if (token) {
       dispatch(findMe());
     }
   }, [token, dispatch]);
 
-  // Redirect to dashboard if user is logged in
   useEffect(() => {
     if (currentUser?.id) {
       router.push('/dashboard');
     }
   }, [currentUser?.id, router]);
 
-  // Show error message if there is one
   useEffect(() => {
     if (errorMessage) {
       notify('error', errorMessage);
     }
   }, [errorMessage]);
 
-  // Show notification if there is one
   useEffect(() => {
     if (notifyState?.showNotification) {
-      notify('success', notifyState?.textNotification);
+      notify('success', notifyState?.textNotification || '');
       dispatch(resetAction());
     }
-  }, [notifyState?.showNotification, dispatch]);
+  }, [notifyState?.showNotification, dispatch, notifyState?.textNotification]);
 
-  const handleSubmit = async (value) => {
-    const { remember, ...rest } = value;
+  const handleSubmit = async (values: LoginValues, { setSubmitting }: FormikHelpers<LoginValues>) => {
+    const { remember, ...rest } = values;
     await dispatch(loginUser(rest));
+    setSubmitting(false);
   };
 
-  const setLogin = (email) => {
+  const setLogin = (email: string) => {
     setInitialValues((prev) => ({ ...prev, email, password: 'password' }));
   };
 
@@ -121,51 +128,53 @@ export default function Login() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <Formik initialValues={initialValues} enableReinitialize onSubmit={handleSubmit}>
-            <Form className="space-y-6">
-              <FormField label="Email" help="Please enter your email">
-                <Field
-                  name="email"
-                  type="email"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </FormField>
-
-              <FormField label="Password" help="Please enter your password">
-                <Field
-                  name="password"
-                  type="password"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </FormField>
-
-              <div className="flex items-center justify-between">
-                <FormCheckRadio type="checkbox" label="Remember me">
+            {({ isSubmitting }) => (
+              <Form className="space-y-6">
+                <FormField label="Email" help="Please enter your email">
                   <Field
-                    type="checkbox"
-                    name="remember"
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    name="email"
+                    type="email"
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
-                </FormCheckRadio>
+                </FormField>
 
-                <div className="text-sm">
-                  <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Forgot your password?
-                  </Link>
+                <FormField label="Password" help="Please enter your password">
+                  <Field
+                    name="password"
+                    type="password"
+                    required
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                </FormField>
+
+                <div className="flex items-center justify-between">
+                  <FormCheckRadio type="checkbox" label="Remember me">
+                    <Field
+                      type="checkbox"
+                      name="remember"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                  </FormCheckRadio>
+
+                  <div className="text-sm">
+                    <Link href="/forgot" className="font-medium text-indigo-600 hover:text-indigo-500">
+                      Forgot your password?
+                    </Link>
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  disabled={isFetching}
-                >
-                  {isFetching ? 'Loading...' : 'Sign in'}
-                </button>
-              </div>
-            </Form>
+                <div>
+                  <button
+                    type="submit"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Signing in...' : 'Sign in'}
+                  </button>
+                </div>
+              </Form>
+            )}
           </Formik>
 
           <div className="mt-6">
