@@ -199,19 +199,19 @@ const PreferencesData = [
 
 const OrganizationsData = [
   {
-    name: 'J. Robert Oppenheimer',
+    name: 'Comte de Buffon',
   },
 
   {
-    name: 'Claude Bernard',
+    name: 'Erwin Schrodinger',
   },
 
   {
-    name: 'Isaac Newton',
+    name: 'James Watson',
   },
 
   {
-    name: 'Enrico Fermi',
+    name: 'William Herschel',
   },
 ];
 
