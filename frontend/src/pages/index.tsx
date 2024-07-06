@@ -49,14 +49,13 @@ export default function Starter() {
             : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
         }`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'left center',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className='absolute inset-0 bg-gradient-to-t from-black to-transparent'></div>
-      <div className='relative z-10 p-4 text-white'>
+      <div className='flex justify-center w-full bg-blue-300/20'>
         
-          className='text-sm hover:underline'
+          className='text-[8px]'
           href={image.photographer_url}
           target='_blank'
           rel='noreferrer'
@@ -68,7 +67,7 @@ export default function Starter() {
   );
 
   const videoBlock = (video) => {
-    if (video.video_files?.length > 0) {
+    if (video?.video_files?.length > 0) {
       return (
         <div className='hidden md:flex flex-col justify-end relative flex-grow-0 flex-shrink-0 w-1/3'>
           <video
@@ -80,11 +79,10 @@ export default function Starter() {
             <source src={video.video_files[0]?.link} type='video/mp4' />
             Your browser does not support the video tag.
           </video>
-          <div className='absolute inset-0 bg-gradient-to-t from-black to-transparent'></div>
-          <div className='relative z-10 p-4 text-white'>
+          <div className='flex justify-center w-full bg-blue-300/20 z-10'>
             
-              className='text-sm hover:underline'
-              href={video.user?.url}
+              className='text-[8px]'
+              href={video.user.url}
               target='_blank'
               rel='noreferrer'
             >
@@ -107,7 +105,7 @@ export default function Starter() {
                   : 'linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))'
               }`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
             }
           : {}
@@ -129,8 +127,8 @@ export default function Starter() {
           {contentType === 'video' && contentPosition !== 'background'
             ? videoBlock(illustrationVideo)
             : null}
-          <div className='flex items-center justify-center flex-col space-y-4 w-full lg:w-2/3 p-6 bg-white bg-opacity-90'>
-            <CardBox className='w-full max-w-lg'>
+          <div className='flex items-center justify-center flex-col space-y-4 w-full lg:w-2/3 p-6'>
+            <CardBox className='w-full max-w-lg shadow-lg'>
               <CardBoxComponentTitle title='Welcome to Social Pop!' />
               <BaseDivider />
               <div className='space-y-3'>
@@ -147,13 +145,13 @@ export default function Starter() {
                   href='/login'
                   label='Login'
                   color='info'
-                  className='w-full py-3'
+                  className='w-full py-2'
                 />
                 <BaseButton
                   href='/register'
                   label='Sign Up'
                   color='success'
-                  className='w-full py-3'
+                  className='w-full py-2'
                 />
               </BaseButtons>
               <div className='grid grid-cols-2 gap-4 mt-6'>
@@ -185,26 +183,18 @@ export default function Starter() {
           </div>
         </div>
       </SectionFullScreen>
-      <footer className='bg-gray-800 text-white py-6'>
+      <div className='bg-gray-800 text-white py-4'>
         <div className='container mx-auto px-4'>
           <div className='flex flex-col md:flex-row justify-between items-center'>
-            <p className='text-sm mb-4 md:mb-0'>
+            <p className='text-sm mb-2 md:mb-0'>
               © 2024 {title}. All rights reserved
             </p>
-            <div className='flex space-x-4'>
-              <Link className='text-sm hover:text-indigo-400 transition-colors' href='/privacy-policy/'>
-                Privacy Policy
-              </Link>
-              <Link className='text-sm hover:text-indigo-400 transition-colors' href='/terms-of-service/'>
-                Terms of Service
-              </Link>
-              <Link className='text-sm hover:text-indigo-400 transition-colors' href='/contact/'>
-                Contact Us
-              </Link>
-            </div>
+            <Link className='text-sm hover:text-indigo-400 transition-colors' href='/privacy-policy/'>
+              Privacy Policy
+            </Link>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
