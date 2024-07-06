@@ -4,7 +4,7 @@ import Head from 'next/head';
 import BaseButton from '../components/BaseButton';
 import CardBox from '../components/CardBox';
 import BaseIcon from '../components/BaseIcon';
-import { mdiGoogle, mdiGithub, mdiInformation } from '@mdi/js';
+import { mdiInformation } from '@mdi/js';
 import SectionFullScreen from '../components/SectionFullScreen';
 import LayoutGuest from '../layouts/Guest';
 import { Field, Form, Formik } from 'formik';
@@ -24,6 +24,8 @@ import { getPexelsImage } from '../helpers/pexels';
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const textColor = useAppSelector((state) => state.style.linkColor);
+  const iconsColor = useAppSelector((state) => state.style.iconsColor);
   const notify = (type, msg) => toast(msg, { type });
   const [illustrationImage, setIllustrationImage] = useState({
     src: undefined,
@@ -39,13 +41,14 @@ export default function Login() {
     notify: notifyState,
   } = useAppSelector((state) => state.auth);
   const [initialValues, setInitialValues] = useState({
-    email: 'user@example.com',
+    email: 'super_admin@example.com',
     password: 'password',
     remember: true,
   });
 
   const title = 'Social Pop';
 
+  // Fetch Pexels image
   useEffect(() => {
     async function fetchData() {
       const image = await getPexelsImage();
@@ -54,24 +57,28 @@ export default function Login() {
     fetchData();
   }, []);
 
+  // Fetch user data
   useEffect(() => {
     if (token) {
       dispatch(findMe());
     }
   }, [token, dispatch]);
 
+  // Redirect to dashboard if user is logged in
   useEffect(() => {
     if (currentUser?.id) {
       router.push('/dashboard');
     }
   }, [currentUser?.id, router]);
 
+  // Show error message if there is one
   useEffect(() => {
     if (errorMessage) {
       notify('error', errorMessage);
     }
   }, [errorMessage]);
 
+  // Show notification if there is one
   useEffect(() => {
     if (notifyState?.showNotification) {
       notify('success', notifyState?.textNotification);
@@ -125,20 +132,20 @@ export default function Login() {
                 <h2 className="text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-gray-600">Join our community with all-time access and free</p>
               </div>
-              <BaseButtons className="flex space-x-4 justify-center">
+              <div className="flex flex-col space-y-4">
                 <BaseButton
                   label="Sign In with Google"
-                  path={mdiGoogle}
-                  className="w-full"
+                  icon={mdiGoogle}
+                  className="w-full py-2 bg-red-600 text-white hover:bg-red-700"
                   onClick={() => alert('Google Sign-In')}
                 />
                 <BaseButton
                   label="Sign In with GitHub"
-                  path={mdiGithub}
-                  className="w-full"
+                  icon={mdiGithub}
+                  className="w-full py-2 bg-gray-800 text-white hover:bg-gray-900"
                   onClick={() => alert('GitHub Sign-In')}
                 />
-              </BaseButtons>
+              </div>
               <div className="relative my-6">
                 <BaseDivider />
                 <span className="absolute inset-x-0 top-2/4 transform -translate-y-2/4 bg-gray-50 px-4 text-gray-600">
@@ -173,7 +180,7 @@ export default function Login() {
                     <BaseButton
                       type="submit"
                       label={isFetching ? 'Loading...' : 'Sign In'}
-                      className="w-full py-2"
+                      className="w-full py-2 bg-blue-600 text-white hover:bg-blue-700"
                       disabled={isFetching}
                     />
                   </BaseButtons>
