@@ -45,13 +45,13 @@ export default function Login() {
     token,
     notify: notifyState,
   } = useAppSelector((state) => state.auth);
-  const [initialValues, setInitialValues] = React.useState({
+  const [initialValues, setInitialValues] = useState({
     email: 'super_admin@flatlogic.com',
     password: 'password',
     remember: true,
   });
 
-  const title = 'social pop';
+  const title = 'Social Pop';
 
   // Fetch Pexels image/video
   useEffect(() => {
@@ -191,16 +191,16 @@ export default function Login() {
             : null}
           <div className='flex items-center justify-center flex-col space-y-4 w-full lg:w-full'>
             <CardBox className='w-full md:w-3/5 lg:w-2/3'>
-              <h2 className='text-4xl font-semibold my-4'>social pop</h2>
+              <h2 className='text-4xl font-semibold my-4'>{title}</h2>
               <div className='flex flex-row text-gray-500 justify-between'>
                 <div>
                   <p className='mb-2'>
                     Use{' '}
                     <code
-                      className={`cursor-pointer ${textColor} `}
+                      className={`cursor-pointer ${textColor}`}
                       onClick={(e) => setLogin(e.target)}
                     >
-                      super_admin@flatlogic.com
+                      super_admin@example.com
                     </code>{' '}
                     to login as Super Admin
                   </p>
@@ -208,20 +208,20 @@ export default function Login() {
                   <p className='mb-2'>
                     Use{' '}
                     <code
-                      className={`cursor-pointer ${textColor} `}
+                      className={`cursor-pointer ${textColor}`}
                       onClick={(e) => setLogin(e.target)}
                     >
-                      admin@flatlogic.com
+                      admin@example.com
                     </code>{' '}
                     to login as Admin
                   </p>
                   <p>
                     Use{' '}
                     <code
-                      className={`cursor-pointer ${textColor} `}
+                      className={`cursor-pointer ${textColor}`}
                       onClick={(e) => setLogin(e.target)}
                     >
-                      client@hello.com
+                      client@example.com
                     </code>{' '}
                     to login as User
                   </p>
@@ -246,21 +246,29 @@ export default function Login() {
               >
                 <Form>
                   <FormField label='Login' help='Please enter your login'>
-                    <Field name='email' />
+                    <Field 
+                      name='email' 
+                      type='email' 
+                      className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600'
+                    />
                   </FormField>
 
                   <FormField label='Password' help='Please enter your password'>
-                    <Field name='password' type='password' />
+                    <Field 
+                      name='password' 
+                      type='password' 
+                      className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600'
+                    />
                   </FormField>
 
-                  <div className={'flex justify-between'}>
+                  <div className='flex justify-between items-center'>
                     <FormCheckRadio type='checkbox' label='Remember'>
                       <Field type='checkbox' name='remember' />
                     </FormCheckRadio>
 
                     <Link
-                      className={`${textColor} text-blue-600`}
-                      href={'/forgot'}
+                      className='text-blue-600'
+                      href='/forgot'
                     >
                       Forgot password?
                     </Link>
@@ -270,7 +278,7 @@ export default function Login() {
 
                   <BaseButtons>
                     <BaseButton
-                      className={'w-full'}
+                      className='w-full'
                       type='submit'
                       label={isFetching ? 'Loading...' : 'Login'}
                       color='info'
@@ -278,9 +286,9 @@ export default function Login() {
                     />
                   </BaseButtons>
                   <br />
-                  <p className={'text-center'}>
-                    Don’t have account yet?{' '}
-                    <Link className={`${textColor}`} href={'/register'}>
+                  <p className='text-center'>
+                    Don’t have an account yet?{' '}
+                    <Link className='text-blue-600' href='/register'>
                       New Account
                     </Link>
                   </p>
